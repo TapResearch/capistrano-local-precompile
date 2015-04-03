@@ -7,8 +7,8 @@ module Capistrano
       configuration.load do
 
         set(:precompile_env)   { rails_env }
-        set(:precompile_cmd)   { "RAILS_ENV=#{precompile_env.to_s.shellescape} #{asset_env} #{rake} assets:precompile" }
-        set(:cleanexpired_cmd) { "RAILS_ENV=#{rails_env.to_s.shellescape} #{asset_env} #{rake} assets:clean_expired" }
+        set(:precompile_cmd)   { "export RAILS_ENV=#{rails_env.to_s.shellescape} && export #{asset_env} && sudo #{rake} assets:precompile" }
+        set(:cleanexpired_cmd) { "export RAILS_ENV=#{rails_env.to_s.shellescape} && export #{asset_env} && sudo #{rake} assets:clean_expired" }
         set(:assets_dir)       { "public/assets" }
         set(:rsync_cmd)        { "rsync -av" }
 
@@ -39,10 +39,11 @@ module Capistrano
               local_manifest_path = run_locally "ls #{assets_dir}/manifest*"
               local_manifest_path.strip!
 
+              ssh_string = "-e 'ssh -i #{key_pair}'"
               servers = find_servers :roles => assets_role, :except => { :no_release => true }
               servers.each do |srvr|
-                run_locally "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{user}@#{srvr}:#{release_path}/#{fetch(:assets_dir)}/"
-                run_locally "#{fetch(:rsync_cmd)} ./#{local_manifest_path} #{user}@#{srvr}:#{release_path}/assets_manifest#{File.extname(local_manifest_path)}"
+                run_locally "#{fetch(:rsync_cmd)} #{ssh_string} ./#{fetch(:assets_dir)}/ #{user}@#{srvr}:#{release_path}/#{fetch(:assets_dir)}/"
+                run_locally "#{fetch(:rsync_cmd)} #{ssh_string} ./#{local_manifest_path} #{user}@#{srvr}:#{release_path}/assets_manifest#{File.extname(local_manifest_path)}"
               end
             end
           end
