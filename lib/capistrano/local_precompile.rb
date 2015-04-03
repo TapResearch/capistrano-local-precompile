@@ -39,7 +39,7 @@ module Capistrano
               local_manifest_path = run_locally "ls #{assets_dir}/manifest*"
               local_manifest_path.strip!
 
-              ssh_string = '-e "ssh -i #{key_pair}"'
+              ssh_string =  '-e "ssh -i ' + "#{key_pair}" + '"'
               servers = find_servers :roles => assets_role, :except => { :no_release => true }
               servers.each do |srvr|
                 run_locally "#{fetch(:rsync_cmd)} #{ssh_string} ./#{fetch(:assets_dir)}/ #{user}@#{srvr}:#{release_path}/#{fetch(:assets_dir)}/"
