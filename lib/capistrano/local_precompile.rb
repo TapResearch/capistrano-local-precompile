@@ -7,8 +7,8 @@ module Capistrano
       configuration.load do
 
         set(:precompile_env)   { rails_env }
-        set(:precompile_cmd)   { "export RAILS_ENV=#{rails_env.to_s.shellescape} && export #{asset_env} && sudo #{rake} assets:precompile" }
-        set(:cleanexpired_cmd) { "export RAILS_ENV=#{rails_env.to_s.shellescape} && export #{asset_env} && sudo #{rake} assets:clean_expired" }
+        set(:precompile_cmd)   { "export RAILS_ENV=#{rails_env.to_s.shellescape} && export #{asset_env} && #{rake} assets:precompile" }
+        set(:cleanexpired_cmd) { "export RAILS_ENV=#{rails_env.to_s.shellescape} && export #{asset_env} && #{rake} assets:clean_expired" }
         set(:assets_dir)       { "public/assets" }
         set(:rsync_cmd)        { "rsync -av" }
 
